@@ -6,7 +6,7 @@ Gitops methodology: detect congif drift, correct config drift, prevent config dr
 
 
 Terraform Lifecycle:
-Code --> init --> plan --> validate --> apply --> destroy
+Code --> fmt --> init  --> validate --> plan --> validate --> apply --> destroy
 
 Resource Graph: dependency graph
 
@@ -99,4 +99,34 @@ Providers ( version, constraints, hashes ) & modules
 lock file: ```.terraform.lock.hcl``` ( updated whenever  ```terraform init ``` runs)
 ```bash
 terraform init -upgrade # force use of configured dependencies versions ( discard lock file details )
+```
+## 6 - Workspace
+```bash
+terraform workspace show # displays current workspace
+terraform workspace new devel # creates new workspace and switch to it ( creates terraform.tfstate.d/devel directory )
+terraform workspace select mydevworkspace # switch to a workspace
+terraform workspace list # list existing workspaces
+```
+## 7 - Organization
+Project Structure: devide folders per environment ( dev, test, prod ...)
+## 8 - Workflow
+### Import existant resources
+- Initialize empty corresponding resource
+- Import resource definition to state:
+```bash
+terraform import docker_container.web $(docker inspect --format="{{.ID}}" hashicorp-learn) # import a running container
+```
+- check import: check in tfstate file, show resource config, add config to a tf file
+```bash
+vim terraform.tfstate
+terraform show 
+terraform show --no-color >> docker.tf
+```
+- remove depricated, unconfigurable parametters
+```bash
+terraform plan
+```
+- make config persistent
+```bash
+terraform apply
 ```
