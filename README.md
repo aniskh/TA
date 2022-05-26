@@ -1,12 +1,12 @@
 # TA
 IaC:
-Declarative vs imperative languages, idempotent, configuration drift
-Provisionning, Deployment, Orchestration
-Gitops methodology: detect congif drift, correct config drift, prevent config drift, mutable vs immutable infrastructure
+Declarative vs imperative languages, idempotent, configuration drift<br />
+Provisionning, Deployment, Orchestration <br />
+Gitops methodology: detect config drift, correct config drift, prevent config drift, mutable vs immutable infrastructure <br />
 
 
 Terraform Lifecycle:
-Code --> fmt --> init  --> validate --> plan --> validate --> apply --> destroy
+Code --> fmt --> init  --> validate --> plan --> validate --> apply --> destroy <br />
 
 Resource Graph: dependency graph
 
@@ -24,24 +24,28 @@ terraform state list
 terraform output
 terraform destroy --auto-approve
 terraform plan -replace; terraform apply -replace # recreate only modified resources
+terraform taint ws_security_group.sg_8080 # (deprecated) force terraform to replace the resource next apply
+terraform force-unlock # manually unlock the state if automatic unlock failed
 ```
 
-```bash
-terraform login
-```
-
+### Syntax:
+collections(map, list, set), object, tupple.<br />
+Functions: numeric ( abs, floor, log, max, ...), string( chmop, indent, join, split, upper, ...), collection ( concat, contains, distinct, , ...), encoding (jsonencode, yamldecode, csvencode, ...), filesystem (abspath, file, ...), date, hash, network, type conversion, ... <br />
+conditional expression: ```(var.name != "" ? var.name : "default_value") ``` <br />
+Dynamic blocks using ```dynamic``` and ``` for_each ``` <br />
+ 
 ## 1 - Providers:
-Providers: Kubernetes, AWS, docker GCP, ... 
-required_providers (source, version, configuration_aliases ), ``` [<HOSTNAME>/]<NAMESPACE>/<TYPE> ``` defined in root module
-provider ( alias, ~~version~~) 
+Providers: Kubernetes, AWS, docker GCP, ... <br />
+required_providers (source, version, configuration_aliases ), ``` [<HOSTNAME>/]<NAMESPACE>/<TYPE> ``` defined in root module <br />
+provider ( alias, ~~version~~) <br />
 Kubernetes: I used Kubernetes function of Docker Desktop Application and followed a little bit this tutorial: https://learn.hashicorp.com/tutorials/terraform/kubernetes-provider
 ```bash
 kubectl config view --minify --flatten --context=docker-desktop
-``` 
+```
 AWS: I followed this tutorial: https://learn.hashicorp.com/collections/terraform/aws-get-started 
 
 ## 2 - State:
-terraform.tfstate, terraform.tfstate.backup
+terraform.tfstate, terraform.tfstate.backup <br />
 Performance: ``` terraform plan -refresh=false -target=main.tf ```
 ```bash
 terraform show  # tfstate
@@ -60,7 +64,7 @@ terraform apply -target="random_pet.bucket_name" # target update on one resource
 ```
 ```bash
 # move resource from one tfstate file to another
-terraform state list
+terraform state list 
 terraform state mv -state-out=../terraform.tfstate aws_instance.example_new aws_instance.example_new
 ```
 troubleshoot:
@@ -86,19 +90,23 @@ terraform console # start terraform console
 ```
 moved: used in configuration to move resources, modules already created
 ## 3 - Terraform settings
-backend ( Terraform cloud, NFS, S3, ...)
-required_version
-required_providers
-resources, dependencies
+backend ( Terraform cloud, NFS, S3, ...) <br />
+required_version <br />
+required_providers <br />
+resources, dependencies <br />
 ## 4 - Provision
-cloud_init
-Packer
-Provisioners ( run in creation-time/ destroy-time ): shell, ansible, local-exec, ...
+cloud_init <br />
+Packer <br />
+Provisioners ( run in creation-time/ destroy-time ): shell, ansible, puppet, file, local-exec, remote_exec ... <br />
 ## 5 - Dependencies
-Providers ( version, constraints, hashes ) & modules
-lock file: ```.terraform.lock.hcl``` ( updated whenever  ```terraform init ``` runs)
+Providers ( version, constraints, hashes ) & modules <br />
+lock file: ```.terraform.lock.hcl``` ( updated whenever  ```terraform init ``` runs) <br />
 ```bash
 terraform init -upgrade # force use of configured dependencies versions ( discard lock file details )
+```
+```depends_on``` meta data: create dependencies between resources
+```
+terraform graph | dot -Tsvg > graph.svg # display a graph of dependency between resources, providers, ... <br />
 ```
 ## 6 - Workspace
 ```bash
@@ -108,17 +116,17 @@ terraform workspace select mydevworkspace # switch to a workspace
 terraform workspace list # list existing workspaces
 ```
 ## 7 - Organization
-Project Structure: devide folders per environment ( dev, test, prod ...)
+Project Structure: devide folders per environment ( dev, test, prod ...) <br />
 ## 8 - Workflow
 ### Import existant resources
-- Initialize empty corresponding resource
-- Import resource definition to state:
+- Initialize empty corresponding resource <br />
+- Import resource definition to state: <br />
 ```bash
 terraform import docker_container.web $(docker inspect --format="{{.ID}}" hashicorp-learn) # import a running container
 ```
-- check import: check in tfstate file, show resource config, add config to a tf file
+- check import: check in tfstate file, show resource config, add config to a tf file <br />
 ```bash
-vim terraform.tfstate
+vim terraform.tfstate 
 terraform show 
 terraform show --no-color >> docker.tf
 ```
@@ -130,3 +138,15 @@ terraform plan
 ```bash
 terraform apply
 ```
+# 9 - Modules:
+Follow responsibility segregation <br />
+Minimum viable Product (MVP) <br />
+Nested modules <br />
+Document modules ( required inputs, optional inputs, outputs), add .gitignore, add README, semantic versionning. <br />
+Publish module: public github repo, name, description, structure, tags for release. <br />
+
+# 11 - Terraform Cloud  Enterprise
+```bash
+terraform login
+```
+Terraform runs workflow: UI/VSC driven, API driven, CLI driven <br />
