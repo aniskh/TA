@@ -1,4 +1,4 @@
-# TA
+# TA: Preparing for Terraform Associate Exam
 IaC:
 Declarative vs imperative languages, idempotent, configuration drift<br />
 Provisionning, Deployment, Orchestration <br />
@@ -6,7 +6,7 @@ Gitops methodology: detect config drift, correct config drift, prevent config dr
 
 
 Terraform Lifecycle:
-Code --> fmt --> init  --> validate --> plan --> validate --> apply --> destroy <br />
+Code --> fmt --> init  --> validate --> plan--> apply  --> validate  --> plan --> apply --> destroy <br />
 
 Resource Graph: dependency graph
 
@@ -150,3 +150,4 @@ Publish module: public github repo, name, description, structure, tags for relea
 terraform login
 ```
 Terraform runs workflow: UI/VSC driven, API driven, CLI driven <br />
+Sentinel: CLI, policies, policy-as-code
