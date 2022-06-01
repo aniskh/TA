@@ -24,6 +24,7 @@ terraform state list
 terraform output
 terraform destroy --auto-approve
 terraform plan -replace; terraform apply -replace # recreate only modified resources
+terraform apply -replace="aws_instance.example" # recreate a resource
 terraform taint ws_security_group.sg_8080 # (deprecated) force terraform to replace the resource next apply
 terraform force-unlock # manually unlock the state if automatic unlock failed
 ```
